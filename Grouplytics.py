@@ -1,4 +1,4 @@
-from wrapper import GroupMeWrapper
+from GroupMeWrapper import GroupMeWrapper
 
 class Grouplytics:
 
