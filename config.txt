@@ -1,0 +1,9 @@
+# EXAMPLE CONFIG FILE
+
+ACCESS_TOKEN: 1qwerty7
+GROUP_NAME: Tuscaloosa Safe Space Department
+GROUP_MEMBERS: Steven Eastcott:Humpty Dumpty
+               Ryan Morelock:The Passion of The Khaled
+               Neil Donetti:Cis White Male Scum
+               Adam Lazarus:Lil Gentlesir
+               Bennett Glasscock:Johnny Bravo
