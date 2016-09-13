@@ -12,7 +12,7 @@ class GroupMeWrapper:
         self.members = self._get_members(group_members)
         self.messages = self._get_messages()
 
-      
+
     def _get_group_ID(self, group_name):
         request = requests.get('{}/groups?token={}'.format(self.base_URL, self.access_token))
         response = request.json()['response']
@@ -20,7 +20,7 @@ class GroupMeWrapper:
             if group['name'] == group_name:
                 return group['id']
 
-         
+
     def _get_messages(self):
         request = requests.get('{}/groups/{}/messages?limit=100&token={}'.format(self.base_URL, self.group_ID, self.access_token))
         response = request.json()['response']
@@ -33,14 +33,14 @@ class GroupMeWrapper:
             request = requests.get('{}/groups/{}/messages?limit=100&before_id={}&token={}'
                                    .format(self.base_URL, self.group_ID, before_ID, self.access_token))
 
-	    # TODO: 
-            # If no messages are found (e.g. when filtering with before_id) we return code 304. 
+	        # TODO:
+            # If no messages are found (e.g. when filtering with before_id) we return code 304.
             # Not sure how this can ever happen with the while loop predicate
             if (request.status_code == 304): break
             response = request.json()['response']
             messages = response['messages']
 
-            # TODO: 
+            # TODO:
             # You would think status code 304 would get raised if this were the case, but it
             # has happened. Needs further investigation.
             if (len(messages) == 0): continue
@@ -54,13 +54,13 @@ class GroupMeWrapper:
         return all_messages
 
 
-    # TODO: 
-    # This is quite possibly the most convoluted function in the world. 
+    # TODO:
+    # This is quite possibly the most convoluted function in the world.
     # Will come back and clean up.
     def _get_members(self, members_from_file):
         request = requests.get('{}/groups/{}?token={}'.format(self.base_URL, self.group_ID, self.access_token))
         members_from_response = request.json()['response']['members']
-        
+
         name_and_nickname = {}
         for member in members_from_file:
             member = member.split(':')
