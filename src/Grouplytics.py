@@ -50,7 +50,7 @@ class Grouplytics:
         names = self._map_member_IDs_to_names(per_member_count)
         for name, user_ID in names.items():
             print('  - {}: {:.2f}'.format(name, float(per_member_count[user_ID]) / self.total_message_count_per_member[user_ID]))
-        print
+        print()
 
 
     def biggest_liker_report(self):
@@ -100,7 +100,7 @@ class Grouplytics:
         names = self._map_member_IDs_to_names(members)
         for name, user_ID in names.items():
             print('  - {}: {:.2f}'.format(name, float(cumulative_word_length[user_ID]) / cumulative_word_count[user_ID]))
-        print
+        print()
 
 
     def dude_report(self):
@@ -183,7 +183,7 @@ class Grouplytics:
         names = self._map_member_IDs_to_names(per_member_count) 
         for name, user_ID in names.items():
             print('  - {}: {} ({:.2f}%)'.format(name, per_member_count[user_ID], (float(per_member_count[user_ID]) / count) * 100))
-        print
+        print()
 
 
     def _determine_word_count(self, word_to_search):

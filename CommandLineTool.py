@@ -1,7 +1,7 @@
 import os
 import time
-from GroupMeWrapper import GroupMeWrapper
-from Grouplytics import Grouplytics
+from src.GroupMeWrapper import GroupMeWrapper
+from src.Grouplytics import Grouplytics
 
 def _get_required_info():
     file_name = _get_file()
@@ -38,7 +38,7 @@ def _format_check(file_name):
 
 def _get_file():
     while True:
-        file_name = raw_input("Enter file name (must end in .txt): ")
+        file_name = input("Enter file name (must end in .txt): ")
         if file_name.endswith('.txt'):
             if os.path.isfile(file_name):
                 if _format_check(file_name):
