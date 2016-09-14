@@ -15,21 +15,21 @@ def encode():
 
 
 
-def decode():
+def decode(filename):
     dict = {'3':'a', '9':'b', 'h':'c', 'b':'d', 'r':'e', 'x':'f', 'i':'g', 'g':'h', 'j':'i', 'a':'j', '4':'k', '7':'l', 'e':'m', 'd':'n', 'q':'o', '2':'p', 'g':'q', 'l':'r', 'y':'s', 'p':'t', 'z':'u', 'w':'v', '5':'w', '0':'x', 'c':'y', 'm':'z', ' ':' ' }
 
-    with open('words.txt') as f:
+    with open(filename) as f:
         lines = f.readlines()
 
-    fo = open("temp.txt", "w")
-
+    words = {}
     for line in lines:
-        newline = ""
+        word = ""
         for c in line:
-            newline += dict[c]
-        fo.write(newline)
-    fo.close()
+            word += dict[c]
+        words[word] = 0
+
+    return words
 
 def deleteFile():
     #To-do: delete decoded swear word file named temp.txt when program is done running
-
+    pass
