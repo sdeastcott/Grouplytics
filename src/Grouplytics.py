@@ -148,25 +148,26 @@ class Grouplytics:
 
     def most_popular_day_report(self):
         import datetime as dt
-        refDate = dt.datetime.fromtimestamp(messages[0]["created_at"])
-        refDate -= dt.timedelta(minutes = refDate.minute, seconds = refDate.second, microseconds = refDate.microsecond)
-        timeElapsed = 86400 # 86400 seconds per day; unix time measured in seconds
+        ref_date = dt.datetime.fromtimestamp(self.messages[0]["created_at"])
+        ref_date -= dt.timedelta(minutes = ref_date.minute, seconds = ref_date.second, microseconds = ref_date.microsecond)
+        time_elapsed = 86400 # 86400 seconds per day; unix time measured in seconds
 
         count = 0
-        maxCount = 0
+        max_count = 0
+        max_date = ref_date
         for message in self.messages:
-            if message['created_at'] in range(refDate, refDate - timeElapsed):
+            if dt.datetime.fromtimestamp(message['created_at']) > ref_date:
                 count += 1
             else:
-                if count > maxCount:
-                    maxCount = count
-                    maxDate = refDate
-                refDate -= timeElapsed # changing reference date to day before
+                if count > max_count:
+                    max_count = count
+                    max_date = ref_date
+                    ref_date -= dt.timedelta(seconds= time_elapsed) # changing reference date to day before
                 count = 1 # adding the message not in range to count for next day
                 
         print('Most Popular Day Report:\n')
-        print('Date: {}\n'.format(maxDate.strftime('%Y-%m-%d')))
-        print('Total Messages: {}\n'.format(maxCount))
+        print('Date: {}\n'.format(max_date.strftime('%Y-%m-%d')))
+        print('Total Messages: {}\n'.format(max_count))
 
     # Say you want to see how often 'Delia Hurley' was mentioned. It would probably
     # make most sense to search for 'Delia' OR 'Hurley' in case someone referred to
