@@ -146,10 +146,33 @@ class Grouplytics:
         print("'{}' count:".format(word))
         self._output_report(word_count)
 
+    def most_popular_hour_report(self):
+        import datetime as dt
+        ref_date = dt.datetime.fromtimestamp(self.messages[0]["created_at"])
+        ref_date -= dt.timedelta(minutes=ref_date.minute, seconds=ref_date.second, microseconds=ref_date.microsecond)
+        time_elapsed = 3600  # 3600 seconds per hour; unix time measured in seconds
+
+        count = 0
+        max_count = 0
+        max_date = ref_date
+        for message in self.messages:
+            if dt.datetime.fromtimestamp(message['created_at']) > ref_date:
+                count += 1
+            else:
+                if count > max_count:
+                    max_count = count
+                    max_date = ref_date
+                    ref_date -= dt.timedelta(seconds=time_elapsed)  # changing reference date to hour before
+                count = 1  # adding the message not in range to count for next hour
+
+        print('Most Popular Day Report:\n')
+        print('Date: {}\n'.format(max_date.strftime('%Y-%m-%d')))
+        print('Total Messages: {}\n'.format(max_count))
+
     def most_popular_day_report(self):
         import datetime as dt
         ref_date = dt.datetime.fromtimestamp(self.messages[0]["created_at"])
-        ref_date -= dt.timedelta(minutes = ref_date.minute, seconds = ref_date.second, microseconds = ref_date.microsecond)
+        ref_date -= dt.timedelta(hours= ref_date.hour, minutes=  ref_date.minute, seconds = ref_date.second, microseconds = ref_date.microsecond)
         time_elapsed = 86400 # 86400 seconds per day; unix time measured in seconds
 
         count = 0
@@ -165,6 +188,29 @@ class Grouplytics:
                     ref_date -= dt.timedelta(seconds= time_elapsed) # changing reference date to day before
                 count = 1 # adding the message not in range to count for next day
                 
+        print('Most Popular Day Report:\n')
+        print('Date: {}\n'.format(max_date.strftime('%Y-%m-%d')))
+        print('Total Messages: {}\n'.format(max_count))
+
+    def most_popular_week_report(self):
+        import datetime as dt
+        ref_date = dt.datetime.fromtimestamp(self.messages[0]["created_at"])
+        ref_date -= dt.timedelta(days= ref_date.day ,minutes=ref_date.minute, seconds=ref_date.second, microseconds=ref_date.microsecond)
+        time_elapsed = 604800  # 604800 seconds per week; unix time measured in seconds
+
+        count = 0
+        max_count = 0
+        max_date = ref_date
+        for message in self.messages:
+            if dt.datetime.fromtimestamp(message['created_at']) > ref_date:
+                count += 1
+            else:
+                if count > max_count:
+                    max_count = count
+                    max_date = ref_date
+                    ref_date -= dt.timedelta(seconds=time_elapsed)  # changing reference date to week before
+                count = 1  # adding the message not in range to count for next week
+
         print('Most Popular Day Report:\n')
         print('Date: {}\n'.format(max_date.strftime('%Y-%m-%d')))
         print('Total Messages: {}\n'.format(max_count))
