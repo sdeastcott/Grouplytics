@@ -1,3 +1,5 @@
+from src.CipherDecoder import decode
+
 class Grouplytics:
     def __init__(self, members, messages):
         self.members = members
@@ -18,11 +20,10 @@ class Grouplytics:
 
 
     def swear_word_report(self):
-        # TODO: Encode this so we can display on GitHub
-        swear_words = {}
-
         count = 0
+        swear_words = decode('swear_words.txt')
         per_member_count = self._initialize_per_member_count()
+
         for message in self.messages:
             text = self._clean_and_tokenize_message(message)
             for word in text:
@@ -83,9 +84,11 @@ class Grouplytics:
 
 
     def donald_trump_report(self):
-        members = self._initialize_per_member_count()
         cumulative_word_count = {}
         cumulative_word_length = {}
+        # TODO: Have a separate function for returning just a set of members
+        members = self._initialize_per_member_count() 
+
         for member in members:
             cumulative_word_count[member] = 0
             cumulative_word_length[member] = 0
@@ -117,34 +120,29 @@ class Grouplytics:
 
 
     # Pass in a dictionary with member user IDs being the keys and lists of GF/BF aliases being the values
-    # Example: {'Steven': ['Kat', 'Katherine'], 'Bennett': ['Payton', 'PP', 'Slim Payt']}
-    # TODO: Function name could use some work.
-    def GFBF_report(self, GFBFdictionary):
+    # Example: {'Mike': ['Eleanor', 'Ellie'], 'Bennett': ['Payton', 'PP', 'Slim Payt']}
+    def GFBF_report(self, GFBF_dictionary):
         count = 0
+        name_and_ID = self._map_user_IDs_to_names()
+        per_member_count = self._initialize_per_member_count()
 
-        for member, aliases in GFBFdictionary.items():
+        for member, aliases in GFBF_dictionary.items():
             for i in range(len(aliases)):
                 aliases[i] = aliases[i].lower()
 
-        user_IDs = self._map_user_IDs_to_names()
         for message in self.messages:
             text = self._clean_and_tokenize_message(message, False)
-            for member, aliases in GFBFdictionary.items():
-                for name in aliases:
-                    if name in text and message['user_id'] == user_IDs[member]:
+            for member, GFBF_aliases in GFBF_dictionary.items():
+                for GFBF_name in GFBF_aliases:
+                    if name in text and message['user_id'] == name_and_ID[member]:
                         count += 1
-                        self.members[message['user_id']] += 1
+                        per_member_count[message['user_id']] += 1
                         break
 
         print("Mention of BF/GF: {}".format(count))
         self._output_report(count)
         self._reset_member_count()
 
-
-    def single_word_report(self, word):
-        word_count = self._determine_word_count(word)
-        print("'{}' count:".format(word))
-        self._output_report(word_count)
 
     def most_popular_hour_report(self):
         import datetime as dt
@@ -169,6 +167,7 @@ class Grouplytics:
         print('Date: {}\n'.format(max_date.strftime('%Y-%m-%d')))
         print('Total Messages: {}\n'.format(max_count))
 
+
     def most_popular_day_report(self):
         import datetime as dt
         ref_date = dt.datetime.fromtimestamp(self.messages[0]["created_at"])
@@ -191,6 +190,7 @@ class Grouplytics:
         print('Most Popular Day Report:\n')
         print('Date: {}\n'.format(max_date.strftime('%Y-%m-%d')))
         print('Total Messages: {}\n'.format(max_count))
+
 
     def most_popular_week_report(self):
         import datetime as dt
@@ -215,28 +215,17 @@ class Grouplytics:
         print('Date: {}\n'.format(max_date.strftime('%Y-%m-%d')))
         print('Total Messages: {}\n'.format(max_count))
 
-    # Say you want to see how often 'Delia Hurley' was mentioned. It would probably
-    # make most sense to search for 'Delia' OR 'Hurley' in case someone referred to
-    # her by just her first or last name.
-    # TODO: Incomplete; also need a more descriptive function name.
-    def multiple_word_report(self, words):
-        count = 0
-        occurrence_dict = {}
 
-        for word in words:
-            occurrence_dict[word] = 0
-
-        for message in self.messages:
-            text = self._clean_and_tokenize_message(message)
-            if [x for x in words if x in text]:
-                count += 1
-                occurence_dict[word] += 1
-                self.members[message['user_id']] += 1
+    def single_word_report(self, word):
+        word_count = self._determine_word_count(word)
+        print("'{}' count:".format(word))
+        self._output_report(word_count)
 
 
-    # TODO: Incomplete
+    # TODO: IN PROGRESS
     def phrase_report(self, phrase):
         count = 0
+        per_member_count 	
         for message in self.messages:
             text = self._clean_and_tokenize_message(message, False)
             if phrase in text:
@@ -248,7 +237,8 @@ class Grouplytics:
 
 
     def _output_report(self, count, per_member_count):
-        names = self._map_member_IDs_to_names(per_member_count) 
+        if count == 0: return
+        names = self._map_member_IDs_to_names(per_member_count)
         for name, user_ID in names.items():
             print('  - {}: {} ({:.2f}%)'.format(name, per_member_count[user_ID], (float(per_member_count[user_ID]) / count) * 100))
         print()
@@ -264,11 +254,13 @@ class Grouplytics:
 
 
     def _clean_and_tokenize_message(self, msg, tokenize = True):
-        if not msg['text']:
-            return ""
-
         message = msg['text']
+        
+        if message == None: 
+            return ""
+        
         message = message.strip().split()
+
         for i in range(0, len(message)):
             word = ''.join(x for x in message[i] if x.isalnum())
             word = word.lower()
