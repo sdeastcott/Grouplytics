@@ -51,22 +51,25 @@ def _get_file():
         else:
             print("That's not a text file. Make sure you're including the .txt extension!")
 
-        time.sleep(3)
-        os.system('clear')
+        time.sleep(2)
+        print()
+
 
 def main():
     required_info = _get_required_info()
     groupme = GroupMeWrapper(required_info['Access Token'], required_info['Group Name'], required_info['Group Members'])
     grouplytics = Grouplytics(groupme.members, groupme.messages)
+    print("success")
+    grouplytics.swear_word_report()
+
     # grouplytics.total_message_report()
     # grouplytics.most_liked_report()
     # grouplytics.biggest_liker_report()
     # grouplytics.donald_trump_report()
     # grouplytics.meme_lord_report()
     # grouplytics.dude_report()
-    grouplytics.most_popular_day_report()
+    # grouplytics.most_popular_day_report()
 
-    # grouplytics.swear_word_report()
     # GFBFdictionary = {'Steve': [''], 'Ryan': ['Elena'], 'Neil': ['Claire'], 'Bennett': ['Slim Payt', 'Payton', 'PJ'], 'Adam': ['Jordan']}
     # grouplytics.GFBF_report(GFBFdictionary)
 main()
