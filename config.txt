@@ -1,9 +1,8 @@
-# EXAMPLE CONFIG FILE
-
-ACCESS_TOKEN: 1qwerty7
+# EXAMPLE CONFIG. DELETE THIS LINE
+ACCESS_TOKEN: access_token_goes_here
 GROUP_NAME: Tuscaloosa Safe Space Department
-GROUP_MEMBERS: Steven Eastcott:Humpty Dumpty
+GROUP_MEMBERS: Steven Eastcott:Stove
                Ryan Morelock:The Passion of The Khaled
-               Neil Donetti:Cis White Male Scum
+               Neil Donetti:White Man
                Adam Lazarus:Lil Gentlesir
                Bennett Glasscock:Johnny Bravo
