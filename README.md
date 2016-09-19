@@ -1,5 +1,5 @@
 # Grouplytics
-Grouplytics is a fun way to learn about any of your GroupMe groups. We sift through (but don't store!) your group messages and create various reports along the way. Currently this is only available as a command line tool, but a live site is in the works.
+Grouplytics is a fun way to learn about any of your GroupMe groups. We sift through (but don't store!) your group messages and generate various reports along the way. Currently this is only available as a command line tool, but a live site is in the works.
 
 ### Available Reports
 - Most Liked
