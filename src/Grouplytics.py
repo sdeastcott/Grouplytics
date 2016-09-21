@@ -1,3 +1,4 @@
+import operator
 from src.CipherDecoder import decode
 
 class Grouplytics:
@@ -99,7 +100,7 @@ class Grouplytics:
                 cumulative_word_count[message['user_id']] += 1
                 cumulative_word_length[message['user_id']] += len(word)
 
-        print("Shortest Average Word Length (AKA, The Donald Trump Report):")
+        print("Average Word Length (AKA, The Donald Trump Report):")
         names = self._map_member_IDs_to_names(members)
         for name, user_ID in names.items():
             print('  - {}: {:.2f}'.format(name, float(cumulative_word_length[user_ID]) / cumulative_word_count[user_ID]))
@@ -237,10 +238,14 @@ class Grouplytics:
 
 
     def _output_report(self, count, per_member_count):
-        if count == 0: return
-        names = self._map_member_IDs_to_names(per_member_count)
-        for name, user_ID in names.items():
-            print('  - {}: {} ({:.2f}%)'.format(name, per_member_count[user_ID], (float(per_member_count[user_ID]) / count) * 100))
+        if count == 0: 
+            print()
+            return
+
+        sorted_count = sorted(per_member_count.items(), key = operator.itemgetter(1), reverse = True)
+        for i in range(0, len(sorted_count)):
+            print('  - {}: {} ({:.2f}%)'.format(self._map_member_ID_to_name(sorted_count[i][0]), 
+                  sorted_count[i][1], (float(sorted_count[i][1]) / count) * 100))
         print()
 
 
@@ -255,22 +260,16 @@ class Grouplytics:
 
     def _clean_and_tokenize_message(self, msg, tokenize = True):
         message = msg['text']
-        
-        if message == None: 
-            return ""
-        
+        if message == None: return ""
         message = message.strip().split()
 
         for i in range(0, len(message)):
             word = ''.join(x for x in message[i] if x.isalnum())
             word = word.lower()
-            # TODO: Better way to check for this?
             if not word.startswith('http'):
                 message[i] = word
 
-        if not tokenize:
-            message = ' '.join(message)
-
+        if not tokenize: message = ' '.join(message)
         return message
 
 
@@ -281,6 +280,12 @@ class Grouplytics:
         return ID_and_count
 
 
+    def _map_member_ID_to_name(self, ID):
+        for name in self.members: 
+            if ID == self.members[name]:
+                return name 
+
+
     def _map_member_IDs_to_names(self, per_member_count):
         name_and_count = {}
         for ID, count in per_member_count.items():
@@ -288,3 +293,4 @@ class Grouplytics:
                 if ID == self.members[name]:
                     name_and_count[name] = ID
         return name_and_count
+
