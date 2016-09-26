@@ -45,7 +45,7 @@ def _get_file():
                     print("Thanks! Now be patient, this is going to take a minute.\n") 
                     return file_name
                 else:
-                    print("Detected incorrect file format. Be sure to follow the example provided!")
+                    print("Detected incorrect file format. Be sure to follow the example provided in config.txt!")
             else:
                 print("File doesn't exist. Make sure it's in the same directory as this script!")
         else:
@@ -57,18 +57,21 @@ def _get_file():
 
 def main():
     required_info = _get_required_info()
-    groupme = GroupMeWrapper(required_info['Access Token'], required_info['Group Name'], required_info['Group Members'])
 
+    groupme = GroupMeWrapper(required_info['Access Token'], required_info['Group Name'], required_info['Group Members'])
     grouplytics = Grouplytics(groupme.members, groupme.messages)
-    grouplytics.swear_word_report()
-    grouplytics.total_message_report()
-    grouplytics.most_liked_report()
-    grouplytics.biggest_liker_report()
-    grouplytics.donald_trump_report()
-    grouplytics.meme_lord_report()
-    grouplytics.dude_report()
+
+    
+    with open('report.txt', 'w') as f:
+        f.write(grouplytics.swear_word_report())
+        f.write(grouplytics.overall_message_report())
+        f.write(grouplytics.most_liked_report())
+        f.write(grouplytics.biggest_liker_report())
+        f.write(grouplytics.donald_trump_report())
+        f.write(grouplytics.meme_lord_report())
+        f.write(grouplytics.dude_report())
 
     # grouplytics.most_popular_day_report()
-    # GFBFdictionary = {'Steve': [''], 'Ryan': ['Elena'], 'Neil': ['Claire'], 'Bennett': ['Slim Payt', 'Payton', 'PJ'], 'Adam': ['Jordan']}
+    # GFBFdictionary = {'Steve': ['Emily'], 'Ryan': ['Elena'], 'Neil': ['Claire'], 'Bennett': ['Slim Payt', 'Payton', 'PJ'], 'Adam': ['Jordan']}
     # grouplytics.GFBF_report(GFBFdictionary)
 main()

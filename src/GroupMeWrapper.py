@@ -28,7 +28,7 @@ class GroupMeWrapper:
         retrieved = len(response['messages'])
         messages = self._filter_messages(response['messages'])
         message_count = response['count']
-       
+      
         while retrieved != message_count:
             before_ID = messages[-1]['id']
             request = requests.get('{}/groups/{}/messages?limit=100&before_id={}&token={}'
