@@ -28,7 +28,6 @@ class GroupMeWrapper:
         retrieved = len(response['messages'])
         messages = self._filter_messages(response['messages'])
         message_count = response['count']
-      
         while retrieved != message_count:
             before_ID = messages[-1]['id']
             request = requests.get('{}/groups/{}/messages?limit=100&before_id={}&token={}'
@@ -46,7 +45,7 @@ class GroupMeWrapper:
     def _filter_messages(self, msgs):
         messages = []
         for message in msgs:
-            if message['user_id'] != 'system':
+            if message['user_id'] != 'system' and message['user_id'] in self.members:
                 messages.append(message)
         return messages
          
@@ -60,10 +59,10 @@ class GroupMeWrapper:
             member = member.split(':')
             name_and_nickname[member[0]] = member[1]
 
-        name_and_ID = {}
+        ID_and_name = {}
         for member in members_from_response:
             for name, nickname in name_and_nickname.items():
                 if member['nickname'] == nickname:
-                    name_and_ID[name] = member['user_id']
+                    ID_and_name[member['user_id']] = name
 
-        return name_and_ID
+        return ID_and_name

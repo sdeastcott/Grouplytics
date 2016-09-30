@@ -61,17 +61,14 @@ def main():
     groupme = GroupMeWrapper(required_info['Access Token'], required_info['Group Name'], required_info['Group Members'])
     grouplytics = Grouplytics(groupme.members, groupme.messages)
 
-    
     with open('report.txt', 'w') as f:
-        f.write(grouplytics.swear_word_report())
         f.write(grouplytics.overall_message_report())
-        f.write(grouplytics.most_liked_report())
-        f.write(grouplytics.biggest_liker_report())
-        f.write(grouplytics.donald_trump_report())
-        f.write(grouplytics.meme_lord_report())
+        f.write(grouplytics.likes_received())
+        f.write(grouplytics.messages_liked())
+        f.write(grouplytics.average_word_length())
+        f.write(grouplytics.swear_word_report())
         f.write(grouplytics.dude_report())
+        f.write(grouplytics.images_shared())
+        # f.write(grouplytics.most_active_days())
 
-    # grouplytics.most_popular_day_report()
-    # GFBFdictionary = {'Steve': ['Emily'], 'Ryan': ['Elena'], 'Neil': ['Claire'], 'Bennett': ['Slim Payt', 'Payton', 'PJ'], 'Adam': ['Jordan']}
-    # grouplytics.GFBF_report(GFBFdictionary)
 main()
