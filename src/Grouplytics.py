@@ -66,10 +66,10 @@ class Grouplytics:
 
         report = self._generate_report('Swear Word Count', total_count, per_member_count)
 
-        if total_count > 10: 
+        if total_count > 25: 
             report += 'Top 10: \n' 
             top_10 = sorted(swear_words.items(), key = operator.itemgetter(1), reverse = True)
-            for i in range(0, 10): 
+            for i in range(0, 26): 
                 report += '  - {}: {}\n'.format(top_10[i][0], top_10[i][1])
          
         return report + '\n'
