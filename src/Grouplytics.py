@@ -1,3 +1,4 @@
+import sys
 import operator
 from src.CipherDecoder import decode
 
@@ -46,7 +47,8 @@ class Grouplytics:
             if favorited_by:
                 total_count += len(favorited_by)
                 for member in favorited_by:
-                    per_member_count[member] += 1
+                    if member in per_member_count:
+                        per_member_count[member] += 1
 
         return self._generate_report('Messages Liked', total_count, per_member_count)
 
@@ -66,10 +68,10 @@ class Grouplytics:
 
         report = self._generate_report('Swear Word Count', total_count, per_member_count)
 
-        if total_count > 25: 
+        if total_count > 9: 
             report += 'Top 10: \n' 
             top_10 = sorted(swear_words.items(), key = operator.itemgetter(1), reverse = True)
-            for i in range(0, 26): 
+            for i in range(0, 10): 
                 report += '  - {}: {}\n'.format(top_10[i][0], top_10[i][1])
          
         return report + '\n'
@@ -114,12 +116,14 @@ class Grouplytics:
     def dude_report(self):
         total_count = 0
         per_member_count = self._initialize_per_member_count()
+        # TODO: This will inevitably miss some. Has to be a better way to generate permutations
+        dudes = ['dude', 'dudes', 'duuude', 'duuuude', 'duuuuude', 'duuuuuude', 'duudddeee'] 
         for message in self.messages:
             text = self._clean_and_tokenize_message(message)
-            # TODO: This will inevitably miss some. Has to be a better way to generate permutations
-            if [i for i in ['dude', 'dudes', 'duuude', 'duuuude', 'duuuuude', 'duuuuuude', 'duudddeee'] if i in text]:
-                total_count += 1
-                per_member_count[message['user_id']] += 1
+            for word in text:
+                if word in dudes:
+                    total_count += 1 
+                    per_member_count[message['user_id']] += 1
 
         return self._generate_report("'dude' count", total_count, per_member_count) 
 
