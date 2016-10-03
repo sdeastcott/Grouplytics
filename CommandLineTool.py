@@ -77,7 +77,6 @@ def main():
     with open('report.txt', 'w', encoding="utf_8") as f:
         f.write(report_to_text(grouplytics.overall_message_report()))
         f.write(report_to_text(grouplytics.likes_received()))
-        f.write(report_to_text(grouplytics.likes_received_per_message()))
         f.write(report_to_text(grouplytics.messages_liked()))
         f.write(report_to_text(grouplytics.average_word_length()))
         f.write(report_to_text(grouplytics.swear_word_report()))

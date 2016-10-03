@@ -31,7 +31,7 @@ class GroupMeWrapper:
             before_ID = messages[-1]['id']
             request = requests.get('{}/groups/{}/messages?limit=100&before_id={}&token={}'
                                    .format(self.base_URL, self.group_ID, before_ID, self.access_token))
-             
+            
             # Break if status code 304 (i.e. no data) is returned
             # TODO: revisit this. why does this happen? how can it be handled without breaking?
             if request.status_code == 304:
