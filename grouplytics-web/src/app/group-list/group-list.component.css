@@ -1,0 +1,46 @@
+.group-list-container {
+  width: 100%;
+  height: 100%;
+  display: table;
+}
+
+.group-list-content {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+.group-list-wrapper {
+  width: 30vh;
+  height: 50vh;
+  margin: 0 auto;
+  padding: 2vh;
+  border-radius: 15px;
+  background: #ffffff;
+  color: #333333;
+}
+
+.group-list {
+  width: 26vh;
+  height: 46vh;
+  padding: 0 1vh;
+  margin: 0 auto;
+  overflow-y: scroll;
+}
+
+.btn {
+  margin-top: 2vh;
+  border-radius: 20px;
+  border: 1px solid #27d05b;
+  background: #27d05b;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  transition: .3s;
+}
+
+.btn:hover {
+  background: #ffffff;
+  border: 1px solid #27d05b;
+  color: #27d05b;
+  transition: .3s;
+}

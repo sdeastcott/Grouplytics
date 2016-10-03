@@ -3,3 +3,4 @@ venv/
 .idea/*
 src/__pycache__/
 config.cfg
+report.txt

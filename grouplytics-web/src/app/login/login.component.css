@@ -1,0 +1,73 @@
+/*
+* Page styles
+*/
+
+.login-container {
+  width: 100%;
+  height: 100%;
+  display: table;
+  text-align: center;
+}
+
+.login-content {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.logo {
+  font-size: 8vh;
+}
+
+.login {
+  padding: 1vh 2vh 1vh 4vh;
+  margin: 3vh;
+  background: url('../../assets/images/groupme_logo.png') no-repeat 1vh center #ffffff;
+  background-size: 2.5vh 2.5vh;
+  border-radius: 20px;
+  border: 2px solid #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.login:hover {
+  border: 2px solid #1A80A6;
+}
+
+.about-privacy-policy a {
+  color: #ffffff;
+  letter-spacing: .3px;
+}
+
+.about-privacy-policy a:hover {
+  text-decoration: none;
+  border-bottom: 1px dotted #ffffff;
+}
+
+/*
+* Responsive design
+*/
+@media only screen and (min-width: 320px) {
+  .logo {
+    font-size: 7vh;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .logo {
+    font-size: 7vh;
+  }
+}
+
+/*
+* Typing tagline
+*/
+p.tagline {
+  font-family: 'Avenir Light', sans-serif;
+  font-size: 4vh;
+  font-weight: 300;
+  margin: 2vh 0;
+}
+
+p.tagline b {
+  font-weight: 300;
+}
