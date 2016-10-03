@@ -1,3 +1,4 @@
+import re
 import operator
 from src.CipherDecoder import decode
 
@@ -6,7 +7,6 @@ class Grouplytics:
     def __init__(self, members, messages):
         self.members = members
         self.messages = messages
-        self.total_message_count_per_member = self._initialize_per_member_count()
 
     def overall_message_report(self):
         total_count = 0
@@ -15,14 +15,16 @@ class Grouplytics:
         for message in self.messages:
             total_count += 1
             per_member_count[message['user_id']] += 1
-            self.total_message_count_per_member[message['user_id']] += 1
 
         return self._generate_report('Message Count', total_count, per_member_count)
 
     def likes_received(self):
         total_count = 0
         per_member_count = self._initialize_per_member_count()
+        total_message_count_per_member = self._initialize_per_member_count()
+
         for message in self.messages:
+            total_message_count_per_member[message['user_id']] += 1
             if message['favorited_by']:
                 total_count += len(message['favorited_by'])
                 per_member_count[message['user_id']] += len(message['favorited_by'])
@@ -31,37 +33,22 @@ class Grouplytics:
         avg_per_message = self._initialize_per_member_count()
         for user_ID in per_member_count:
             avg_per_message[user_ID] = round(
-                float(per_member_count[user_ID]) / self.total_message_count_per_member[user_ID], 2)
+                float(per_member_count[user_ID]) / total_message_count_per_member[user_ID], 2)
 
-        report = self._generate_report('Likes Received', total_count, per_member_count)
-        return report
-
-    def likes_received_per_message(self):
-        total_count = 0
-        per_member_count = self._initialize_per_member_count()
-        for message in self.messages:
-            if message['favorited_by']:
-                total_count += len(message['favorited_by'])
-                per_member_count[message['user_id']] += len(message['favorited_by'])
-
-        # Divide total likes received by total messages sent to determine average likes per message
-        avg_per_message = self._initialize_per_member_count()
-        for user_ID in per_member_count:
-            avg_per_message[user_ID] = round(
-                float(per_member_count[user_ID]) / self.total_message_count_per_member[user_ID], 2)
-
-        report = self._generate_report('Likes Received Per Message', None, avg_per_message, True, False)
+        subreport = self._generate_report('Likes Received Per Message', None, avg_per_message, includePercent=False)
+        report = self._generate_report('Likes Received', total_count, per_member_count, subreports=[subreport])
         return report
 
     def messages_liked(self):
         total_count = 0
         per_member_count = self._initialize_per_member_count()
+
         for message in self.messages:
             favorited_by = message['favorited_by']
             if favorited_by:
                 total_count += len(favorited_by)
                 for member in favorited_by:
-                    if member in per_member_count:
+                    if member in per_member_count: 
                         per_member_count[member] += 1
 
         return self._generate_report('Messages Liked', total_count, per_member_count)
@@ -79,14 +66,13 @@ class Grouplytics:
                     swear_words[word] += 1
                     per_member_count[message['user_id']] += 1
 
-        report = self._generate_report('Swear Word Count', total_count, per_member_count)
-
         if total_count > 9:
-            report += 'Top 10: \n'
+            subreport = {"title": 'Top 10', "type": 'Top 10', "total": None, "items": [], "subreports": None}
             top_10 = sorted(swear_words.items(), key=operator.itemgetter(1), reverse=True)
             for i in range(0, 10):
-                report += '  - {}: {}\n'.format(top_10[i][0], top_10[i][1])
+                subreport['items'].append({'name': top_10[i][0], 'count': top_10[i][1]})
 
+        report = self._generate_report('Swear Word Count', total_count, per_member_count, subreports=[subreport])
         return report
 
     def images_shared(self):
@@ -126,50 +112,24 @@ class Grouplytics:
     def dude_report(self):
         total_count = 0
         per_member_count = self._initialize_per_member_count()
-        # TODO: This will inevitably miss some. Has to be a better way to generate permutations
-        # TODO: (Marcus here) you could try a slightly more detailed version of du+d+e+
-        # or a d followed by at least 1 u, d, and e in that order
-        dudes = ['dude', 'dudes', 'duuude', 'duuuude', 'duuuuude', 'duuuuuude', 'duudddeee']
+        pattern = re.compile('d+u+d+e+')
+
         for message in self.messages:
             text = self._clean_and_tokenize_message(message)
             for word in text:
-                if word in dudes:
+                if pattern.match(word):
                     total_count += 1
                     per_member_count[message['user_id']] += 1
 
         return self._generate_report("'dude' count", total_count, per_member_count)
 
-        # Pass in a dictionary with member user IDs being the keys and lists of GF/BF aliases being the values
-
-    # Example: {'Mike': ['Eleanor', 'Ellie'], 'Bennett': ['Payton', 'PP', 'Slim Payt']}
-    def GFBF_report(self, GFBF_dictionary):
-        count = 0
-        name_and_ID = self._map_member_IDs_to_names()
-        per_member_count = self._initialize_per_member_count()
-
-        for member, aliases in GFBF_dictionary.items():
-            for i in range(len(aliases)):
-                aliases[i] = aliases[i].lower()
-
-        for message in self.messages:
-            text = self._clean_and_tokenize_message(message, False)
-            for member, GFBF_aliases in GFBF_dictionary.items():
-                for GFBF_name in GFBF_aliases:
-                    if name in text and message['user_id'] == name_and_ID[member]:
-                        count += 1
-                        per_member_count[message['user_id']] += 1
-                        break
-
-        print("Mention of BF/GF: {}".format(count))
-        self._output_report(count)
-
-    def _generate_report(self, title, total_count, per_member_count, shouldDescend=True, includePercent=True):
-        # TODO: Discuss doing this in an object oriented way.
+    def _generate_report(self, title, total_count, per_member_count, shouldDescend=True, includePercent=True, subreports=[]):
         report = {
             "type": title, # both type and title for flexibility
             "title": title,
             "total": total_count if isinstance(total_count, int) else None,
-            "items": []
+            "items": [],
+            "subreports": subreports 
         }
 
         if total_count == 0:
@@ -214,31 +174,3 @@ class Grouplytics:
                 if member_ID == ID:
                     name_and_count[name] = count
         return name_and_count
-
-    '''
-    IN PROGRESS
-    def single_word_report(self, word):
-        word_count = self._determine_word_count(word)
-        print("'{}' count:".format(word))
-        self._output_report(word_count)
-
-    def phrase_report(self, phrase):
-        count = 0
-        per_member_count 	
-        for message in self.messages:
-            text = self._clean_and_tokenize_message(message, False)
-            if phrase in text:
-                count += 1
-                self.members[message['user_id']] += 1
-
-        print("Mention of '{}': {}".format(phrase, count))
-        self._output_report()
-
-    def _determine_word_count(self, word_to_search):
-        count = 0
-        for message in self.messages:
-            text = self._clean_and_tokenize_message(message)
-            if word in text:
-                count += 1
-        return count
-    '''
