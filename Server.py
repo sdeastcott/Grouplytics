@@ -46,3 +46,7 @@ def meme_lord_report():
 @app.route('/dude_report')
 def dude_report():
     return json.dumps({'title': 'Dude Report', 'report': grouplytics.dude_report()})
+
+
+if __name__ == "__main__":
+    app.run()
