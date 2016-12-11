@@ -1,25 +1,24 @@
 import operator
 from src.CipherDecoder import decode
 
+
 class Grouplytics:
     def __init__(self, members, messages):
         self.members = members
-        self.messages = messages 
+        self.messages = messages
         self.total_message_count_per_member = self._initialize_per_member_count()
-
 
     def overall_message_report(self):
         total_count = 0
         per_member_count = self._initialize_per_member_count()
-         
+
         for message in self.messages:
             total_count += 1
             per_member_count[message['user_id']] += 1
             self.total_message_count_per_member[message['user_id']] += 1
-         
+
         return self._generate_report('Message Count', total_count, per_member_count)
-         
- 
+
     def likes_received(self):
         total_count = 0
         per_member_count = self._initialize_per_member_count()
@@ -31,12 +30,12 @@ class Grouplytics:
         # Divide total likes received by total messages sent to determine average likes per message
         avg_per_message = self._initialize_per_member_count()
         for user_ID in per_member_count:
-            avg_per_message[user_ID] = round(float(per_member_count[user_ID]) / self.total_message_count_per_member[user_ID], 2)
+            avg_per_message[user_ID] = round(
+                float(per_member_count[user_ID]) / self.total_message_count_per_member[user_ID], 2)
 
         report = self._generate_report('Likes Received', total_count, per_member_count)
         report += self._generate_report('Likes Received Per Message', None, avg_per_message, True, False)
         return report
-
 
     def messages_liked(self):
         total_count = 0
@@ -50,7 +49,6 @@ class Grouplytics:
                         per_member_count[member] += 1
 
         return self._generate_report('Messages Liked', total_count, per_member_count)
-
 
     def swear_word_report(self):
         total_count = 0
@@ -67,14 +65,13 @@ class Grouplytics:
 
         report = self._generate_report('Swear Word Count', total_count, per_member_count)
 
-        if total_count > 9: 
-            report += 'Top 10: \n' 
-            top_10 = sorted(swear_words.items(), key = operator.itemgetter(1), reverse = True)
-            for i in range(0, 10): 
+        if total_count > 9:
+            report += 'Top 10: \n'
+            top_10 = sorted(swear_words.items(), key=operator.itemgetter(1), reverse=True)
+            for i in range(0, 10):
                 report += '  - {}: {}\n'.format(top_10[i][0], top_10[i][1])
-         
-        return report + '\n'
 
+        return report + '\n'
 
     def images_shared(self):
         total_count = 0
@@ -88,11 +85,10 @@ class Grouplytics:
 
         return self._generate_report('Images Shared', total_count, per_member_count)
 
-
     def average_word_length(self):
         cumulative_word_count = {}
         cumulative_word_length = {}
-        members = self._initialize_per_member_count() 
+        members = self._initialize_per_member_count()
 
         for user_ID in members:
             cumulative_word_count[user_ID] = 0
@@ -108,26 +104,27 @@ class Grouplytics:
         avg_word_length = self._initialize_per_member_count()
         for user_ID in members:
             avg_word_length[user_ID] = round(float(cumulative_word_length[user_ID]) / cumulative_word_count[user_ID], 2)
-            
-        return self._generate_report('Average Word Length', None, avg_word_length, True, False)
 
+        return self._generate_report('Average Word Length', None, avg_word_length, True, False)
 
     def dude_report(self):
         total_count = 0
         per_member_count = self._initialize_per_member_count()
         # TODO: This will inevitably miss some. Has to be a better way to generate permutations
-        dudes = ['dude', 'dudes', 'duuude', 'duuuude', 'duuuuude', 'duuuuuude', 'duudddeee'] 
+        # TODO: (Marcus here) you could try a slightly more detailed version of du+d+e+
+        # or a d followed by at least 1 u, d, and e in that order
+        dudes = ['dude', 'dudes', 'duuude', 'duuuude', 'duuuuude', 'duuuuuude', 'duudddeee']
         for message in self.messages:
             text = self._clean_and_tokenize_message(message)
             for word in text:
                 if word in dudes:
-                    total_count += 1 
+                    total_count += 1
                     per_member_count[message['user_id']] += 1
 
-        return self._generate_report("'dude' count", total_count, per_member_count) 
+        return self._generate_report("'dude' count", total_count, per_member_count)
 
+        # Pass in a dictionary with member user IDs being the keys and lists of GF/BF aliases being the values
 
-    # Pass in a dictionary with member user IDs being the keys and lists of GF/BF aliases being the values
     # Example: {'Mike': ['Eleanor', 'Ellie'], 'Bennett': ['Payton', 'PP', 'Slim Payt']}
     def GFBF_report(self, GFBF_dictionary):
         count = 0
@@ -150,35 +147,26 @@ class Grouplytics:
         print("Mention of BF/GF: {}".format(count))
         self._output_report(count)
 
+    def _generate_report(self, title, total_count, per_member_count, shouldDescend=True, includePercent=True):
+        # TODO: Discuss doing this in an object oriented way.
+        report = {
+            "type": title, # both type and title for flexibility
+            "title": title,
+            "total": total_count if isinstance(total_count, int) else None,
+            "items": []
+        }
 
-    def _generate_report(self, title, total_count, per_member_count, shouldDescend = True, includePercent = True):
-        report = title + ': {}\n'.format(total_count if isinstance(total_count, int) else '')
-        
         if total_count == 0:
             return report
-        
+
         # Sort dictionary by count so each report appears sorted. 
-        sorted_count = sorted(per_member_count.items(), key = operator.itemgetter(1), reverse = shouldDescend)
-         
-        if includePercent: 
-            return self._generate_report_with_percent(report, total_count, sorted_count)
-        
-        for i in range(0, len(sorted_count)):
-            if sorted_count[i][1] > 0:
-            	report += '  - {}: {}\n'.format(self._map_member_ID_to_name(sorted_count[i][0]), sorted_count[i][1])
+        sorted_count = sorted(per_member_count.items(), key=operator.itemgetter(1), reverse=shouldDescend)
 
-        return report + '\n'
-         
+        report["items"] = [{self._map_member_ID_to_name(x[0]): x[1]}
+                           for x in filter(lambda item: item[1] > 0, sorted_count)]
+        return report
 
-    def _generate_report_with_percent(self, report, total_count, sorted_count):
-        for i in range(0, len(sorted_count)):
-            if sorted_count[i][1] > 0:
-                report += '  - {}: {} ({:.2f}%)\n'.format(self._map_member_ID_to_name(sorted_count[i][0]),
-                      sorted_count[i][1], (float(sorted_count[i][1]) / total_count) * 100)
-        return report + '\n'
-
-
-    def _clean_and_tokenize_message(self, msg, tokenize = True):
+    def _clean_and_tokenize_message(self, msg, tokenize=True):
         message = msg['text']
         if message == None: return ""
         message = message.strip().split()
@@ -189,16 +177,15 @@ class Grouplytics:
             if not word.startswith('http'):
                 message[i] = word
 
-        if not tokenize: message = ' '.join(message)
+        if not tokenize:
+            message = ' '.join(message)
         return message
-
 
     def _initialize_per_member_count(self):
         ID_and_count = {}
         for ID in self.members:
             ID_and_count[ID] = 0
         return ID_and_count
-
 
     def _map_member_ID_to_name(self, ID):
         if ID in self.members:
@@ -207,7 +194,7 @@ class Grouplytics:
     def _map_member_IDs_to_names(self, per_member_count):
         name_and_count = {}
         for member_ID, count in per_member_count.items():
-       	    for ID, name in self.members:
+            for ID, name in self.members:
                 if member_ID == ID:
                     name_and_count[name] = count
         return name_and_count
