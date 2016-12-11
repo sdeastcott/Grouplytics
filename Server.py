@@ -13,7 +13,7 @@ def overall_message_report():
     return json.dumps({'title': 'Overall Message Report', 'report': grouplytics.overall_message_report()})
 
 
-@app.route('/swear_word_report')
+@app.route('/swear_word_report', methods=["POST"])
 def swear_word_report():
     data = request.get_json()
     groupme = GroupMeWrapper(data['token'], data['name'], data['members'])
@@ -21,7 +21,7 @@ def swear_word_report():
     return json.dumps({'title': 'Swear Word Report', 'report': grouplytics.swear_word_report()})
 
 
-@app.route('/avg_word_length')
+@app.route('/avg_word_length', methods=["POST"])
 def avg_word_length():
     data = request.get_json()
     groupme = GroupMeWrapper(data['token'], data['name'], data['members'])
@@ -29,7 +29,7 @@ def avg_word_length():
     return json.dumps({'title': 'Average Word Length', 'report': grouplytics.avg_word_length()})
 
 
-@app.route('/likes_received')
+@app.route('/likes_received', methods=["POST"])
 def likes_received():
     data = request.get_json()
     groupme = GroupMeWrapper(data['token'], data['name'], data['members'])
@@ -37,7 +37,7 @@ def likes_received():
     return json.dumps({'title': 'Likes Received', 'report': grouplytics.likes_received()})
 
 
-@app.route('/messages_liked')
+@app.route('/messages_liked', methods=["POST"])
 def messages_liked():
     data = request.get_json()
     groupme = GroupMeWrapper(data['token'], data['name'], data['members'])
@@ -45,7 +45,7 @@ def messages_liked():
     return json.dumps({'title': 'Messages Liked', 'report': grouplytics.messages_liked()})
 
 
-@app.route('/images_shared')
+@app.route('/images_shared', methods=["POST"])
 def meme_lord_report():
     data = request.get_json()
     groupme = GroupMeWrapper(data['token'], data['name'], data['members'])
@@ -53,7 +53,7 @@ def meme_lord_report():
     return json.dumps({'title': 'Images Shared', 'report': grouplytics.images_shared()})
 
 
-@app.route('/dude_report')
+@app.route('/dude_report', methods=["POST"])
 def dude_report():
     data = request.get_json()
     groupme = GroupMeWrapper(data['token'], data['name'], data['members'])
