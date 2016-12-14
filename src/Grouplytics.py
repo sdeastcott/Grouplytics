@@ -162,7 +162,7 @@ class Grouplytics:
         # Sort dictionary by count so each report appears sorted. 
         sorted_count = sorted(per_member_count.items(), key=operator.itemgetter(1), reverse=shouldDescend)
 
-        report["items"] = [{self._map_member_ID_to_name(x[0]): x[1]}
+        report["items"] = [{'name': self._map_member_ID_to_name(x[0]), 'count': x[1]}
                            for x in filter(lambda item: item[1] > 0, sorted_count)]
         return report
 

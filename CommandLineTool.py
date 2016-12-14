@@ -25,7 +25,7 @@ def _get_required_info():
     return required_info
 
 
-# TODO: Should probably make this more robust 
+# TODO: Should probably make this more robust
 def _format_check(file_name):
     with open(file_name) as f:
         lines = f.readlines()
@@ -42,7 +42,7 @@ def _get_file():
         if file_name.endswith('.txt'):
             if os.path.isfile(file_name):
                 if _format_check(file_name):
-                    print("Thanks! Now be patient, this is going to take a minute.\n") 
+                    print("Thanks! Now be patient, this is going to take a minute.\n")
                     return file_name
                 else:
                     print("Detected incorrect file format. Be sure to follow the example provided in config.txt!")
@@ -54,6 +54,13 @@ def _get_file():
         time.sleep(2)
         print()
 
+def report_to_text(report):
+    out = "{} - {}\n".format(report['title'], report['total'])
+    for item in report['items']:
+        out += "- {}: {}\n".format(item['name'], item['count'])
+    out += '\n'
+    return  out
+
 
 def main():
     required_info = _get_required_info()
@@ -62,13 +69,13 @@ def main():
     grouplytics = Grouplytics(groupme.members, groupme.messages)
 
     with open('report.txt', 'w') as f:
-        f.write(grouplytics.overall_message_report())
-        f.write(grouplytics.likes_received())
-        f.write(grouplytics.messages_liked())
-        f.write(grouplytics.average_word_length())
-        f.write(grouplytics.swear_word_report())
-        f.write(grouplytics.dude_report())
-        f.write(grouplytics.images_shared())
+        f.write(report_to_text(grouplytics.overall_message_report()))
+        # f.write(report_to_text(grouplytics.likes_received()))
+        f.write(report_to_text(grouplytics.messages_liked()))
+        f.write(report_to_text(grouplytics.average_word_length()))
+        f.write(report_to_text(grouplytics.swear_word_report()))
+        f.write(report_to_text(grouplytics.dude_report()))
+        f.write(report_to_text(grouplytics.images_shared()))
         # f.write(grouplytics.most_active_days())
 
 main()
