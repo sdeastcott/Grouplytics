@@ -34,7 +34,23 @@ class Grouplytics:
                 float(per_member_count[user_ID]) / self.total_message_count_per_member[user_ID], 2)
 
         report = self._generate_report('Likes Received', total_count, per_member_count)
-        report += self._generate_report('Likes Received Per Message', None, avg_per_message, True, False)
+        return report
+
+    def likes_received_per_message(self):
+        total_count = 0
+        per_member_count = self._initialize_per_member_count()
+        for message in self.messages:
+            if message['favorited_by']:
+                total_count += len(message['favorited_by'])
+                per_member_count[message['user_id']] += len(message['favorited_by'])
+
+        # Divide total likes received by total messages sent to determine average likes per message
+        avg_per_message = self._initialize_per_member_count()
+        for user_ID in per_member_count:
+            avg_per_message[user_ID] = round(
+                float(per_member_count[user_ID]) / self.total_message_count_per_member[user_ID], 2)
+
+        report = self._generate_report('Likes Received Per Message', None, avg_per_message, True, False)
         return report
 
     def messages_liked(self):
@@ -71,7 +87,7 @@ class Grouplytics:
             for i in range(0, 10):
                 report += '  - {}: {}\n'.format(top_10[i][0], top_10[i][1])
 
-        return report + '\n'
+        return report
 
     def images_shared(self):
         total_count = 0
@@ -128,7 +144,7 @@ class Grouplytics:
     # Example: {'Mike': ['Eleanor', 'Ellie'], 'Bennett': ['Payton', 'PP', 'Slim Payt']}
     def GFBF_report(self, GFBF_dictionary):
         count = 0
-        name_and_ID = self._map_user_IDs_to_names()
+        name_and_ID = self._map_member_IDs_to_names()
         per_member_count = self._initialize_per_member_count()
 
         for member, aliases in GFBF_dictionary.items():

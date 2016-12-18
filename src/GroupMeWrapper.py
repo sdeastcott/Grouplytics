@@ -33,7 +33,8 @@ class GroupMeWrapper:
                                    .format(self.base_URL, self.group_ID, before_ID, self.access_token))
              
             # Break if status code 304 (i.e. no data) is returned
-            if (request.status_code == 304): break
+            if (request.status_code == 304):
+                break
             response = request.json()['response']
             retrieved += len(response['messages'])
             messages += self._filter_messages(response['messages'])

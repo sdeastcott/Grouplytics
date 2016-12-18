@@ -54,12 +54,17 @@ def _get_file():
         time.sleep(2)
         print()
 
+
 def report_to_text(report):
-    out = "{} - {}\n".format(report['title'], report['total'])
+    out = []
+    if report['total'] is None:
+        out.append(report['title'])
+    else:
+        out.append("{} - {}".format(report['title'], report['total']))
     for item in report['items']:
-        out += "- {}: {}\n".format(item['name'], item['count'])
-    out += '\n'
-    return  out
+        out.append("- {}: {}".format(item['name'], item['count']))
+    out.append("\n")
+    return "\n".join(out)
 
 
 def main():
@@ -70,7 +75,8 @@ def main():
 
     with open('report.txt', 'w') as f:
         f.write(report_to_text(grouplytics.overall_message_report()))
-        # f.write(report_to_text(grouplytics.likes_received()))
+        f.write(report_to_text(grouplytics.likes_received()))
+        f.write(report_to_text(grouplytics.likes_received_per_message()))
         f.write(report_to_text(grouplytics.messages_liked()))
         f.write(report_to_text(grouplytics.average_word_length()))
         f.write(report_to_text(grouplytics.swear_word_report()))
