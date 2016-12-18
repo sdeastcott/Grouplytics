@@ -44,3 +44,21 @@ Send an HTTP POST at one of the routes with the following json as the body.
     ]
 }
 ```
+
+The response should look something like this (expect this to change soon):
+```js
+{
+  "report": {
+    "items": [
+      {
+        "count": 52, // count for this individual item
+        "name": "username here"
+      } //,...
+    ],
+    "title": "Message Count", //display name for this report
+    "total": 110, //sum of all the counts in items
+    "type": "Message Count" //type name for this report. May not be human readable
+  },
+  "title": "Overall Message Report" //outer title
+}
+```
