@@ -1,4 +1,3 @@
-import json
 from flask import Flask, request, jsonify
 from src.Grouplytics import Grouplytics
 from src.GroupMeWrapper import GroupMeWrapper

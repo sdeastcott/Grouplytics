@@ -82,6 +82,5 @@ def main():
         f.write(report_to_text(grouplytics.swear_word_report()))
         f.write(report_to_text(grouplytics.dude_report()))
         f.write(report_to_text(grouplytics.images_shared()))
-        # f.write(grouplytics.most_active_days())
 
 main()
