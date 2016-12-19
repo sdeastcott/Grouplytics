@@ -10,6 +10,7 @@ obviously terribly inefficient. A future change will be made once we figure out
 how we're handling data storage.
 ********************'''
 
+
 @app.route('/overall_message_report', methods=["POST"])
 def overall_message_report():
     data = request.get_json()
@@ -52,7 +53,7 @@ def messages_liked():
     groupme = GroupMeWrapper(data['token'], data['name'], data['members'])
     grouplytics = Grouplytics(groupme.members, groupme.messages)
     return jsonify({'title': 'Messages Liked',
-                      'report': grouplytics.messages_liked()})
+                    'report': grouplytics.messages_liked()})
 
 
 @app.route('/images_shared', methods=["POST"])

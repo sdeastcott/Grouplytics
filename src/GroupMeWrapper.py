@@ -17,8 +17,8 @@ class GroupMeWrapper:
         request = requests.get('{}/groups?token={}'.format(self.base_URL, self.access_token))
         response = request.json()['response']
         for group in response:
-            name = ''.join([i if ord(i) < 128 else ' ' for i in group['name']])
-            if group_name == name.strip():
+            # name = ''.join([i if ord(i) < 128 else ' ' for i in group['name']])
+            if group_name == group['name']:
                 return group['id']
 
     def _get_messages(self):

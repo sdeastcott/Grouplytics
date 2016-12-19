@@ -5,7 +5,7 @@ from src.Grouplytics import Grouplytics
 
 def _get_required_info():
     file_name = _get_file()
-    with open(file_name) as f:
+    with open(file_name, 'r', encoding="utf_8") as f:
         token = f.readline().strip()
         token = token.split(':', 1)[1].strip()
         name = f.readline().strip()
@@ -27,7 +27,7 @@ def _get_required_info():
 
 # TODO: Should probably make this more robust
 def _format_check(file_name):
-    with open(file_name) as f:
+    with open(file_name, 'r', encoding="utf-8") as f:
         lines = f.readlines()
         if lines[0].startswith('ACCESS_TOKEN'):
             if lines[1].startswith('GROUP_NAME:'):
@@ -73,7 +73,7 @@ def main():
     groupme = GroupMeWrapper(required_info['Access Token'], required_info['Group Name'], required_info['Group Members'])
     grouplytics = Grouplytics(groupme.members, groupme.messages)
 
-    with open('report.txt', 'w') as f:
+    with open('report.txt', 'w', encoding="utf_8") as f:
         f.write(report_to_text(grouplytics.overall_message_report()))
         f.write(report_to_text(grouplytics.likes_received()))
         f.write(report_to_text(grouplytics.likes_received_per_message()))
