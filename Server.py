@@ -4,6 +4,12 @@ from src.GroupMeWrapper import GroupMeWrapper
 app = Flask(__name__)
 
 
+'''*******************
+Right now we're making calls to the GroupMe API for every single report. This is 
+obviously terribly inefficient. A future change will be made once we figure out
+how we're handling data storage.
+********************'''
+
 @app.route('/overall_message_report', methods=["POST"])
 def overall_message_report():
     data = request.get_json()
