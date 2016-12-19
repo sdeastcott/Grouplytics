@@ -4,6 +4,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 requests.packages.urllib3.disable_warnings(SNIMissingWarning)
 
+
 class GroupMeWrapper:
     def __init__(self, access_token, group_name, group_members):
         self.base_URL = 'https://api.groupme.com/v3'
@@ -12,7 +13,6 @@ class GroupMeWrapper:
         self.members = self._get_members(group_members)
         self.messages = self._get_messages()
 
-
     def _get_group_ID(self, group_name):
         request = requests.get('{}/groups?token={}'.format(self.base_URL, self.access_token))
         response = request.json()['response']
@@ -20,7 +20,6 @@ class GroupMeWrapper:
             name = ''.join([i if ord(i) < 128 else ' ' for i in group['name']])
             if group_name == name.strip():
                 return group['id']
-
 
     def _get_messages(self):
         request = requests.get('{}/groups/{}/messages?limit=100&token={}'.format(self.base_URL, self.group_ID, self.access_token))
@@ -34,13 +33,13 @@ class GroupMeWrapper:
                                    .format(self.base_URL, self.group_ID, before_ID, self.access_token))
              
             # Break if status code 304 (i.e. no data) is returned
-            if (request.status_code == 304): break
+            if (request.status_code == 304):
+                break
             response = request.json()['response']
             retrieved += len(response['messages'])
             messages += self._filter_messages(response['messages'])
 
         return messages
-
 
     def _filter_messages(self, msgs):
         messages = []
@@ -48,7 +47,6 @@ class GroupMeWrapper:
             if message['user_id'] != 'system' and message['user_id'] in self.members:
                 messages.append(message)
         return messages
-         
 
     def _get_members(self, members_from_file):
         request = requests.get('{}/groups/{}?token={}'.format(self.base_URL, self.group_ID, self.access_token))
