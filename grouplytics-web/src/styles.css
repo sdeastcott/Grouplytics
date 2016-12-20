@@ -31,17 +31,3 @@ html, body {
 .logo span {
   color: #D3D3D3;
 }
-
-.main-container {
-  width: 100%;
-  min-height: 100%;
-  display: table;
-  text-align: center;
-}
-
-//TODO: fix loading animation
-.loading {
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-}
