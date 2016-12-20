@@ -17,7 +17,6 @@ class GroupMeWrapper:
         request = requests.get('{}/groups?token={}'.format(self.base_URL, self.access_token))
         response = request.json()['response']
         for group in response:
-            # name = ''.join([i if ord(i) < 128 else ' ' for i in group['name']])
             if group_name == group['name']:
                 return group['id']
 
@@ -33,7 +32,7 @@ class GroupMeWrapper:
                                    .format(self.base_URL, self.group_ID, before_ID, self.access_token))
              
             # Break if status code 304 (i.e. no data) is returned
-            if (request.status_code == 304):
+            if request.status_code == 304:
                 break
             response = request.json()['response']
             retrieved += len(response['messages'])
