@@ -60,7 +60,7 @@ class GroupMeWrapper:
         for member in members_from_file:
             member = member.split(':')
             name_and_nickname[member[0]] = member[1]
-
+        
         ID_and_name = {}
         for member in members_from_response:
             for name, nickname in name_and_nickname.items():
