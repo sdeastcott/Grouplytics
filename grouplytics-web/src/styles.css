@@ -1,1 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
+
+/*
+* Fonts
+*/
+@font-face {
+  font-family: 'Avenir';
+  src: url(assets/fonts/avenir-medium.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Avenir Light';
+  src: url(assets/fonts/avenir-light.ttf) format ('truetype');
+}
+
+/*
+* Full page styles
+*/
+html, body {
+  height: 100%;
+  font-family: 'Avenir', sans-serif;
+  background: -webkit-radial-gradient(#43BDEA, #1A80A6);
+  color: #ffffff;
+}
+
+.logo {
+  font-size: 10vh;
+  letter-spacing: .3vh;
+}
+
+.logo span {
+  color: #D3D3D3;
+}
+
+.main-container {
+  width: 100%;
+  height: 100%;
+  display: table;
+}
+
+//TODO: fix loading animation
+.loading {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
