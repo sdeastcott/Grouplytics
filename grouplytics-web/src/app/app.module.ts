@@ -7,8 +7,8 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { SelectPageComponent } from './select-page/select-page.component';
 import { ResultPageComponent } from './result-page/result-page.component';
-import { GroupListSelectComponent } from './select-page/group-list-select.component';
-import { GroupSelectComponent } from './select-page/group-select.component';
+import { GroupListSelectComponent } from './select-page/group-list-select/group-list-select.component';
+import { GroupSelectComponent } from './select-page/group-list-select/group-select.component';
 import { GroupListResultComponent } from './result-page/group-list-result.component';
 import { GroupResultComponent } from './result-page/group-result.component';
 
