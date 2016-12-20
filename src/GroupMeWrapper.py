@@ -17,7 +17,6 @@ class GroupMeWrapper:
         request = requests.get('{}/groups?token={}'.format(self.base_URL, self.access_token))
         response = request.json()['response']
         for group in response:
-            # name = ''.join([i if ord(i) < 128 else ' ' for i in group['name']])
             if group_name == group['name']:
                 return group['id']
 
@@ -56,7 +55,7 @@ class GroupMeWrapper:
         for member in members_from_file:
             member = member.split(':')
             name_and_nickname[member[0]] = member[1]
-
+        
         ID_and_name = {}
         for member in members_from_response:
             for name, nickname in name_and_nickname.items():
