@@ -1,6 +1,6 @@
 import re
 import operator
-from src.CipherDecoder import decode
+from src.cipher_decoder import decode
 
 
 class Grouplytics:

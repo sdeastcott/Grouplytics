@@ -1,17 +1,11 @@
 from flask import Flask, request, jsonify, session
-from src.Grouplytics import Grouplytics
-from src.GroupMeWrapper import GroupMeWrapper
+from src.grouplytics import Grouplytics
+from src.groupme_wrapper import GroupMeWrapper
 app = Flask(__name__)
 
 SECRET_KEY = "development key"
 app.config.from_object(__name__)
 app.config.from_envvar("APPLICATION_CONFIG", silent=True)
-
-'''*******************
-Right now we're making calls to the GroupMe API for every single report. This is 
-obviously terribly inefficient. A future change will be made once we figure out
-how we're handling data storage.
-********************'''
 
 
 @app.route('/callback')
