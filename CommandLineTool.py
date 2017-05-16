@@ -8,6 +8,7 @@ def _get_required_info():
     with open(file_name, 'r', encoding="utf_8") as f:
         token = f.readline().strip()
         token = token.split(':', 1)[1].strip()
+        
         name = f.readline().strip()
         name = name.split(':', 1)[1].strip()
 
@@ -15,6 +16,7 @@ def _get_required_info():
         member = member.split(':', 1)[1].strip()
         members = []
         members.append(member)
+        
         for remaining in f:
             members.append(remaining.strip())
 
@@ -29,9 +31,9 @@ def _get_required_info():
 def _format_check(file_name):
     with open(file_name, 'r', encoding="utf-8") as f:
         lines = f.readlines()
-        if lines[0].startswith('ACCESS_TOKEN'):
-            if lines[1].startswith('GROUP_NAME:'):
-                if lines[2].startswith('GROUP_MEMBERS:'):
+        if lines[0].strip().startswith('ACCESS_TOKEN'):
+            if lines[1].strip().startswith('GROUP_NAME:'):
+                if lines[2].strip().startswith('GROUP_MEMBERS:'):
                     return True
         return False
 
@@ -69,7 +71,6 @@ def report_to_text(report):
 
 def main():
     required_info = _get_required_info()
-
     groupme = GroupMeWrapper(required_info['Access Token'], required_info['Group Name'], required_info['Group Members'])
     grouplytics = Grouplytics(groupme.members, groupme.messages)
 

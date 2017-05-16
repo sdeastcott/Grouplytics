@@ -26,14 +26,17 @@ class GroupMeWrapper:
         retrieved = len(response['messages'])
         messages = self._filter_messages(response['messages'])
         message_count = response['count']
+        
         while retrieved != message_count:
             before_ID = messages[-1]['id']
             request = requests.get('{}/groups/{}/messages?limit=100&before_id={}&token={}'
                                    .format(self.base_URL, self.group_ID, before_ID, self.access_token))
              
             # Break if status code 304 (i.e. no data) is returned
+            # TODO: revisit this. why does this happen? how can it be handled without breaking?
             if request.status_code == 304:
                 break
+
             response = request.json()['response']
             retrieved += len(response['messages'])
             messages += self._filter_messages(response['messages'])
@@ -43,6 +46,7 @@ class GroupMeWrapper:
     def _filter_messages(self, msgs):
         messages = []
         for message in msgs:
+            # TODO: should we filter out users who have left the group? I don't think there's a way to retrace their identity
             if message['user_id'] != 'system' and message['user_id'] in self.members:
                 messages.append(message)
         return messages
@@ -51,6 +55,7 @@ class GroupMeWrapper:
         request = requests.get('{}/groups/{}?token={}'.format(self.base_URL, self.group_ID, self.access_token))
         members_from_response = request.json()['response']['members']
 
+        # TODO: necessary? adds a layer of complication between ID, GruopMe name, and real name
         name_and_nickname = {}
         for member in members_from_file:
             member = member.split(':')

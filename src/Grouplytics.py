@@ -6,10 +6,12 @@ class Grouplytics:
     def __init__(self, members, messages):
         self.members = members
         self.messages = messages
+        # TODO: I don't like this
         self.total_message_count_per_member = self._initialize_per_member_count()
 
     def overall_message_report(self):
         total_count = 0
+        # TODO: I don't like how we have to initialize this for every report. Way to reduce redundancy?
         per_member_count = self._initialize_per_member_count()
 
         for message in self.messages:
@@ -68,7 +70,7 @@ class Grouplytics:
 
     def swear_word_report(self):
         total_count = 0
-        swear_words = decode('swear_words.txt')
+        swear_words = decode('swear_words.txt') # TODO: add more!
         per_member_count = self._initialize_per_member_count()
 
         for message in self.messages:
@@ -81,6 +83,7 @@ class Grouplytics:
 
         report = self._generate_report('Swear Word Count', total_count, per_member_count)
 
+        # TODO: should this be in a separate function?
         if total_count > 9:
             report += 'Top 10: \n'
             top_10 = sorted(swear_words.items(), key=operator.itemgetter(1), reverse=True)
@@ -89,6 +92,7 @@ class Grouplytics:
 
         return report
 
+    # TODO: what's the difference between image and linked image?
     def images_shared(self):
         total_count = 0
         per_member_count = self._initialize_per_member_count()
@@ -142,6 +146,8 @@ class Grouplytics:
         # Pass in a dictionary with member user IDs being the keys and lists of GF/BF aliases being the values
 
     # Example: {'Mike': ['Eleanor', 'Ellie'], 'Bennett': ['Payton', 'PP', 'Slim Payt']}
+    # TODO: consider scrapping. too hard to have user configure.
+    # IDEA! who talks about boys the most; who talks about girls the most. would need to filter out sexually amibiguous names
     def GFBF_report(self, GFBF_dictionary):
         count = 0
         name_and_ID = self._map_member_IDs_to_names()
@@ -182,9 +188,9 @@ class Grouplytics:
                            for x in filter(lambda item: item[1] > 0, sorted_count)]
         return report
 
-    def _clean_and_tokenize_message(self, msg, tokenize=True):
+    def _clean_and_tokenize_message(self, msg):
+        if not msg['text']: return ""
         message = msg['text']
-        if message == None: return ""
         message = message.strip().split()
 
         for i in range(0, len(message)):
@@ -192,9 +198,7 @@ class Grouplytics:
             word = word.lower()
             if not word.startswith('http'):
                 message[i] = word
-
-        if not tokenize:
-            message = ' '.join(message)
+            
         return message
 
     def _initialize_per_member_count(self):
@@ -216,7 +220,7 @@ class Grouplytics:
         return name_and_count
 
     '''
-    IN PROGRESS
+    IN PROGRESS / MIGHT DEPRECATE
     def single_word_report(self, word):
         word_count = self._determine_word_count(word)
         print("'{}' count:".format(word))
@@ -226,7 +230,8 @@ class Grouplytics:
         count = 0
         per_member_count 	
         for message in self.messages:
-            text = self._clean_and_tokenize_message(message, False)
+            text = self._clean_and_tokenize_message(message)
+            text = ' '.join(text)
             if phrase in text:
                 count += 1
                 self.members[message['user_id']] += 1
