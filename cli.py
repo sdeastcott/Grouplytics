@@ -1,7 +1,7 @@
 import os
 import time
-from src.GroupMeWrapper import GroupMeWrapper
-from src.Grouplytics import Grouplytics
+from src.groupme_wrapper import GroupMeWrapper
+from src.grouplytics import Grouplytics
 
 def _get_required_info():
     file_name = _get_file()

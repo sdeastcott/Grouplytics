@@ -26,8 +26,9 @@ class GroupMeWrapper:
         retrieved = len(response['messages'])
         messages = self._filter_messages(response['messages'])
         message_count = response['count']
+        print(message_count)
         
-        while retrieved != message_count:
+        while retrieved < message_count:
             before_ID = messages[-1]['id']
             request = requests.get('{}/groups/{}/messages?limit=100&before_id={}&token={}'
                                    .format(self.base_URL, self.group_ID, before_ID, self.access_token))
@@ -40,7 +41,11 @@ class GroupMeWrapper:
             response = request.json()['response']
             retrieved += len(response['messages'])
             messages += self._filter_messages(response['messages'])
+            if (retrieved % 1000 == 0): 
+                print("woo!")
+                print(retrieved)
 
+        print(retrieved)
         return messages
 
     def _filter_messages(self, msgs):
