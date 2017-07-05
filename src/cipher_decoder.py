@@ -7,7 +7,7 @@ def decode(filename):
                 'w':'v', '5':'w', '0':'x', 'c':'y', 'm':'z', ' ':' ', '\n': '\n'}
 
     swear_words = {}
-    with open(os.getcwd() + '/src/' + filename) as f:
+    with open(filename) as f:
         for line in f:
             word = ""
             for ch in line:

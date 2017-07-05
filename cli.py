@@ -3,6 +3,7 @@ import time
 from src.groupme_wrapper import GroupMeWrapper
 from src.grouplytics import Grouplytics
 
+
 def _get_required_info():
     file_name = _get_file()
     with open(file_name, 'r', encoding="utf_8") as f:
@@ -59,28 +60,37 @@ def _get_file():
 
 def report_to_text(report):
     out = []
+
     if report['total'] is None:
         out.append(report['title'])
     else:
         out.append("{} - {}".format(report['title'], report['total']))
+
     for item in report['items']:
         out.append("- {}: {}".format(item['name'], item['count']))
+
     out.append("\n")
+
+    if report['subreport']:
+        report_to_text(report['subreport'])
+
     return "\n".join(out)
 
 
 def main():
     required_info = _get_required_info()
-    groupme = GroupMeWrapper(required_info['Access Token'], required_info['Group Name'], required_info['Group Members'])
-    grouplytics = Grouplytics(groupme.members, groupme.messages)
+    group_data = GroupMeWrapper(required_info['Access Token'], required_info['Group Name']).get_group_data()
+    grouplytics = Grouplytics(group_data)
 
-    with open('report.txt', 'w', encoding="utf_8") as f:
+    with open('report.txt', 'w', encoding='utf_8') as f:
         f.write(report_to_text(grouplytics.overall_message_report()))
         f.write(report_to_text(grouplytics.likes_received()))
         f.write(report_to_text(grouplytics.messages_liked()))
         f.write(report_to_text(grouplytics.average_word_length()))
         f.write(report_to_text(grouplytics.swear_word_report()))
         f.write(report_to_text(grouplytics.dude_report()))
+        f.write(report_to_text(grouplytics.gossip_report()))
+        f.write(report_to_text(grouplytics.youth_slang_report()))
         f.write(report_to_text(grouplytics.images_shared()))
 
 main()
