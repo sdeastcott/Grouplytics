@@ -20,13 +20,19 @@ class GroupMeWrapper:
     def _get_group_data(self, group_name):
         group_ID = self._get_group_ID(group_name)
         members = self._get_members(group_ID)
+
         messages = self._get_messages(group_ID, members)
-        aliases = self._get_aliases(messages, members)
+        filtered = self._filter_messages(messages, members)
+        user_messages = filtered[0]
+        system_messages = filtered[1]
+        aliases = self._get_aliases(user_messages, members)
 
         group_data = {}
         group_data['group_id'] = group_ID
         group_data['members'] = members
-        group_data['messages'] = messages
+        group_data['user_messages'] = user_messages
+        group_data['system_messages'] = system_messages
+        group_data['creation_date'] = system_messages[-1]['created_at']
         group_data['aliases'] = aliases
 
         return group_data
@@ -44,7 +50,7 @@ class GroupMeWrapper:
         request = requests.get('{}/groups/{}/messages?limit=100&token={}'.format(self._base_URL, group_ID, self._access_token))
         response = request.json()['response']
         retrieved = len(response['messages'])
-        messages = self._filter_messages(response['messages'], members)
+        messages = response['messages']
         message_count = response['count']
         
         while retrieved < message_count:
@@ -56,27 +62,31 @@ class GroupMeWrapper:
             if request.status_code == 304: break
             response = request.json()['response']
             retrieved += len(response['messages'])
-            messages += self._filter_messages(response['messages'], members)
+            messages += response['messages']
             if retrieved % 5000 == 0: print(retrieved)
             
         return messages
 
 
     def _filter_messages(self, messages, members):
-        filtered = []
+        user_messages = []
+        system_messages = []
 
         for message in messages:
-            if message['name'] != 'system' and message['user_id'] in members:
+            if message['sender_type'] == 'system':
+                system_messages.append(message)
+                continue
+
+            if message['user_id'] in members:
                 if message['text']:
                     text = message['text'].strip().lower()
                     text = ''.join(ch for ch in text if ch.isalnum() or ch == " ")
-                    if text.startswith('http'): continue # TODO: why did I do this?
                     message['text'] = text
-                filtered.append(message)
+                user_messages.append(message)
 
-        return filtered
+        return (user_messages, system_messages)
 
-
+    
     def _get_members(self, group_ID):
         request = requests.get('{}/groups/{}?token={}'.format(self._base_URL, group_ID, self._access_token))
         members_from_response = request.json()['response']['members']
