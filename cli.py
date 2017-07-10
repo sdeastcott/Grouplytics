@@ -6,6 +6,7 @@ from src.grouplytics import Grouplytics
 
 def _get_required_info():
     file_name = _get_file()
+
     with open(file_name, 'r', encoding="utf_8") as f:
         token = f.readline().strip()
         token = token.split(':', 1)[1].strip()
@@ -54,43 +55,43 @@ def _get_file():
         else:
             print("That's not a text file. Make sure you're including the .txt extension!")
 
-        time.sleep(2)
+        time.sleep(1)
         print()
 
 
 def report_to_text(report):
-    out = []
+    with open('report.txt', 'a') as f:
+        out = []
+        if report['total'] is None:
+            out.append(report['title'])
+        else:
+            out.append("{} - {}".format(report['title'], report['total']))
 
-    if report['total'] is None:
-        out.append(report['title'])
-    else:
-        out.append("{} - {}".format(report['title'], report['total']))
+        for item in report['items']:
+            out.append("- {}: {}".format(item['name'], item['count']))
 
-    for item in report['items']:
-        out.append("- {}: {}".format(item['name'], item['count']))
-
-    out.append("\n")
-
+        out.append("\n")
+        f.write("\n".join(out))
+        
     if report['subreport']:
         report_to_text(report['subreport'])
-
-    return "\n".join(out)
-
 
 def main():
     required_info = _get_required_info()
     group_data = GroupMeWrapper(required_info['Access Token'], required_info['Group Name']).get_group_data()
     grouplytics = Grouplytics(group_data)
 
-    with open('report.txt', 'w', encoding='utf_8') as f:
-        f.write(report_to_text(grouplytics.overall_message_report()))
-        f.write(report_to_text(grouplytics.likes_received()))
-        f.write(report_to_text(grouplytics.messages_liked()))
-        f.write(report_to_text(grouplytics.average_word_length()))
-        f.write(report_to_text(grouplytics.swear_word_report()))
-        f.write(report_to_text(grouplytics.dude_report()))
-        f.write(report_to_text(grouplytics.gossip_report()))
-        f.write(report_to_text(grouplytics.youth_slang_report()))
-        f.write(report_to_text(grouplytics.images_shared()))
+    with open('report.txt', 'w') as f:
+        f.write("Group Creation Date: ")
+        f.write(grouplytics.get_creation_date() + '\n' + '\n')
+    
+    report_to_text(grouplytics.overall_message_report())
+    report_to_text(grouplytics.likes_received())
+    report_to_text(grouplytics.messages_liked())
+    report_to_text(grouplytics.average_word_length())
+    report_to_text(grouplytics.swear_word_report())
+    report_to_text(grouplytics.dude_report())
+    report_to_text(grouplytics.youth_slang_report())
+    report_to_text(grouplytics.images_shared())
 
 main()

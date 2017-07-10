@@ -1,5 +1,7 @@
 import re
+import time
 import operator
+from datetime import datetime
 from collections import defaultdict
 from src.cipher_decoder import decode
 
@@ -7,9 +9,13 @@ from src.cipher_decoder import decode
 class Grouplytics:
     def __init__(self, group_data):
         self.group_data = group_data
-        self.messages = group_data['messages']
+        self.messages = group_data['user_messages']
         self.members = group_data['members']
         
+
+    def get_creation_date(self):
+        return datetime.fromtimestamp(self.group_data['creation_date']).strftime("%m/%d/%y")
+    
 
     def overall_message_report(self):
         total_count = 0
@@ -18,8 +24,18 @@ class Grouplytics:
         for message in self.messages:
             total_count += 1
             per_member_count[message['user_id']] += 1
+        
+        seconds_surpassed = float(time.time()) - float(self.group_data['creation_date'])
+        days_surpassed =  seconds_surpassed / 86400.0
+        avg_per_day = round(total_count / days_surpassed, 2)
 
-        return self._generate_report('Message Count', total_count, per_member_count)
+        avg_per_member = defaultdict(int)
+        for user_id in per_member_count:
+            avg_per_member[user_id] = round(
+                per_member_count[user_id] / days_surpassed, 2)
+                
+        subreport = self._generate_report('Average Messages Per Day', avg_per_day, avg_per_member)
+        return self._generate_report('Message Count', total_count, per_member_count, subreport=subreport)
 
 
     def likes_received(self):
@@ -35,9 +51,9 @@ class Grouplytics:
 
         # Divide total likes received by total messages sent to determine average likes per message
         avg_per_message = defaultdict(int)
-        for user_ID in likes_received_count:
-            avg_per_message[user_ID] = round(
-                float(likes_received_count[user_ID]) / message_count_per_member[user_ID], 2)
+        for user_id in likes_received_count:
+            avg_per_message[user_id] = round(
+                float(likes_received_count[user_id]) / message_count_per_member[user_id], 2)
 
         subreport = self._generate_report('Likes Received Per Message', None, avg_per_message, includePercent=False)
         report = self._generate_report('Likes Received', total_count, likes_received_count, subreport=subreport)
@@ -64,15 +80,17 @@ class Grouplytics:
         cumulative_word_length = defaultdict(int)
 
         for message in self.messages:
-            if message['text']:
-                for word in message['text'].split():
+            text = message['text']
+            if text:
+                for word in text.split():
+                    if word.startswith('http') or word.startswith('www') or len(word) > 15: continue
                     cumulative_word_count[message['user_id']] += 1
                     cumulative_word_length[message['user_id']] += len(word)
 
         # Divide total word length by total word count to determine average word length per member
         avg_word_length = defaultdict(int)
-        for user_ID in self.members:
-            avg_word_length[user_ID] = round(float(cumulative_word_length[user_ID]) / cumulative_word_count[user_ID], 2)
+        for user_id in self.members:
+            avg_word_length[user_id] = round(float(cumulative_word_length[user_id]) / cumulative_word_count[user_id], 2)
 
         return self._generate_report('Average Word Length', None, avg_word_length, True, False)
 
@@ -90,41 +108,6 @@ class Grouplytics:
                         per_member_count[message['user_id']] += 1
 
         return self._generate_report('Images Shared', total_count, per_member_count)
-
-
-    def gossip_report(self):
-        # Enter all names into a dictionary for fast lookup
-        names = {}
-        with open('src/text/names.txt', 'r') as f:
-            for line in f:
-                name = line.strip()
-                names[name] = 0
-
-        # Count all occurrences of names  
-        for message in self.messages:
-            if message['text']:
-                for word in message['text'].split():
-                    if word in names:
-                        names[word] += 1
-
-        # Sort name occurences and get top 25
-        top_25 = []
-        sorted_arr = sorted(names.items(), key=operator.itemgetter(1), reverse=True)
-        for i in range(0, 25):
-            top_25.append({'name': sorted_arr[i][0], 'count': sorted_arr[i][1]})
-
-        # Remove any aliases from top 25.
-        revised_top = []
-        aliases = self.group_data['aliases']
-        for name in top_25:
-            for user_aliases in aliases.values():
-                if name['name'] in user_aliases:
-                    revised_top.append(name)
-                    break
-
-        revised_top = revised_top[:5]
-        report = {"title": 'Gossip Report', "total": None, "items": revised_top, "subreport": None}
-        return report
 
 
     def youth_slang_report(self):
@@ -183,11 +166,11 @@ class Grouplytics:
 
         return self._generate_report("'dude' count", total_count, per_member_count)
 
-    
+     
     def _generate_report(self, title, total_count, key_val, shouldDescend=True, includePercent=True, subreport=None):
         report = {
             "title": title,
-            "total": total_count if isinstance(total_count, int) else None,
+            "total": total_count if total_count != 0 else None,
             "items": [],
             "subreport": subreport
         }
@@ -204,57 +187,44 @@ class Grouplytics:
         if ID in self.members:
             return self.members[ID]
 
+
     '''
-    def _clean_and_tokenize(self, messages):
-        tokenized = []
+    def gossip_report(self):
+        # Enter all names into a dictionary for fast lookup
+        names = {}
+        with open('src/text/names.txt', 'r') as f:
+            for line in f:
+                name = line.strip()
+                names[name] = 0
 
-        for message in messages:
-            if not message['text']: continue
-            text = message['text']
-            text = text.strip().split()
+        # Count all occurrences of names  
+        for message in self.messages:
+            if message['text']:
+                for word in message['text'].split():
+                    if word in names:
+                        names[word] += 1
 
-            for i in range(0, len(text)):
-                word = ''.join(x for x in text[i] if x.isalnum())
-                word = word.lower()
-                if word.startswith('http'): continue
-                text[i] = word
-            
-            message['text'] = text
-            tokenized.append(message)
-	    
-        return tokenized
- 
+        # Sort name occurences and get top 25
+        top_25 = []
+        sorted_arr = sorted(names.items(), key=operator.itemgetter(1), reverse=True)
+        for i in range(0, 25):
+            top_25.append({'name': sorted_arr[i][0], 'count': sorted_arr[i][1]})
+        
+        first_names = []
+        for aliases in self.group_data['aliases'].values():
+            first_names.append(aliases[-1].split()[0].lower())
+        
+        revised_top = []
+        for name in top_25:
+            flag = True
+            for first_name in first_names:
+                if name['name'] in first_name:
+                    flag = False
+                    break
+            if flag:
+                revised_top.append(name)
 
-    def _clean_and_tokenize_message(self, message):
-        if not msg['text']: return ""
-        message = message['text']
-        message = message.strip().split()
-
-        for i in range(0, len(message)):
-            word = ''.join(x for x in message[i] if x.isalnum())
-            word = word.lower()
-            if not word.startswith('http'):
-                message[i] = word
-            
-        return message
-
-
-    def _map_member_IDs_to_names(self, per_member_count):
-        name_and_count = {}
-
-        for member_ID, count in per_member_count.items():
-            for ID, name in self.members:
-                if member_ID == ID:
-                    name_and_count[name] = count
-
-        return name_and_count
-
-
-    def _initialize_per_member_count(self):
-        ID_and_count = {}
-
-        for ID in self.members:
-            ID_and_count[ID] = 0
-
-        return ID_and_count
+        revised_top = revised_top[:5]
+        report = {"title": 'Gossip Report', "total": None, "items": revised_top, "subreport": None}
+        return report
     '''
