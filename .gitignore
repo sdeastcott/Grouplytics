@@ -1,6 +1,34 @@
-*.pyc
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/dist
+/tmp
+
+# dependencies
+/node_modules
+/bower_components
+
+# IDEs and editors
+/.idea
+/.vscode
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage/*
+/libpeerconnection.log
+/typings
+/.pyc
 venv/
-.idea/*
 src/__pycache__/
 config.cfg
 report.txt
+
+#System Files
+.DS_Store
+Thumbs.db
