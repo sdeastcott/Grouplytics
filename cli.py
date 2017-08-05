@@ -1,6 +1,6 @@
 import os
 import time
-from src.groupme_wrapper import GroupMeWrapper
+from src.group import group
 from src.grouplytics import Grouplytics
 
 
@@ -78,7 +78,7 @@ def report_to_text(report):
 
 def main():
     required_info = _get_required_info()
-    group_data = GroupMeWrapper(required_info['Access Token'], required_info['Group Name']).get_group_data()
+    group_data = Group(required_info['Access Token'], required_info['Group Name']).get_group_data()
     grouplytics = Grouplytics(group_data)
 
     with open('report.txt', 'w') as f:

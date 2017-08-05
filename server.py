@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, session, render_template
 from src.grouplytics import Grouplytics
-from src.groupme_wrapper import GroupMeWrapper
+from src.group import Group
 app = Flask(__name__)
 
 SECRET_KEY = "development key"
