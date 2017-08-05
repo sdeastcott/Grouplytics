@@ -23,7 +23,7 @@
 /coverage/*
 /libpeerconnection.log
 /typings
-/.pyc
+*.pyc
 venv/
 src/__pycache__/
 config.cfg

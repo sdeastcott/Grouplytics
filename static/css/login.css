@@ -21,12 +21,13 @@
 .login {
   padding: 1vh 2vh 1vh 4vh;
   margin: 3vh;
-  background: url('../../assets/images/groupme_logo.png') no-repeat 1vh center #ffffff;
+  background: url('../images/groupme_logo.png') no-repeat 1vh center #ffffff;
   background-size: 2.5vh 2.5vh;
   border-radius: 20px;
   border: 2px solid #ffffff;
   text-transform: uppercase;
   letter-spacing: 1px;
+  transition: 0.5s;
 }
 
 .login:hover {
