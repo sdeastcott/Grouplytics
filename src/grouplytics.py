@@ -7,13 +7,13 @@ from src.cipher_decoder import decode
 
 
 class Grouplytics:
-    def __init__(self, group_data):
-        self.group_data = group_data
-        self.messages = group_data['user_messages']
-        self.members = group_data['members']
+    def __init__(self, messages, members):
+        self.messages = messages
+        self.members = members
         
-
+    # TODO
     def get_creation_date(self):
+        # TODO: I accidentally deleted this code
         return datetime.fromtimestamp(self.group_data['creation_date']).strftime("%m/%d/%y")
     
 

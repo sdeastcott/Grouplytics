@@ -1,6 +1,6 @@
 import os
 import time
-from src.group import group
+from src.groupme import GroupMe
 from src.grouplytics import Grouplytics
 
 
@@ -29,7 +29,6 @@ def _get_required_info():
     return required_info
 
 
-# TODO: Should probably make this more robust
 def _format_check(file_name):
     with open(file_name, 'r', encoding="utf-8") as f:
         lines = f.readlines()
@@ -76,10 +75,16 @@ def report_to_text(report):
     if report['subreport']:
         report_to_text(report['subreport'])
 
+
 def main():
     required_info = _get_required_info()
-    group_data = Group(required_info['Access Token'], required_info['Group Name']).get_group_data()
-    grouplytics = Grouplytics(group_data)
+    access_token = required_info['Access Token']
+    group_name = required_info['Group Name']
+    groupme = GroupMe(access_token)
+    group_id = groupme.get_group_id(group_name)
+    members = groupme.get_group_members(group_id)
+    messages = groupme.get_group_messages(group_id, True)
+    grouplytics = Grouplytics(members, messages)
 
     with open('report.txt', 'w') as f:
         f.write("Group Creation Date: ")
