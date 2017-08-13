@@ -19,7 +19,7 @@ class GroupMe:
 
 
     def get_groups(self):
-        request = requests.get('{}/groups?token=={}'.format(self._base_URL, self._access_token))
+        request = requests.get('{}/groups?token={}'.format(self._base_URL, self._access_token))
         response = request.json()['response']
         return response
 

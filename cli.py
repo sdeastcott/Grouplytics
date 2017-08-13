@@ -82,8 +82,8 @@ def main():
     group_name = required_info['Group Name']
     groupme = GroupMe(access_token)
     group_id = groupme.get_group_id(group_name)
-    members = groupme.get_group_members(group_id)
-    messages = groupme.get_group_messages(group_id, True)
+    members = groupme.get_members(group_id)
+    messages = groupme.get_messages(group_id, True)
     grouplytics = Grouplytics(members, messages)
 
     with open('report.txt', 'w') as f:

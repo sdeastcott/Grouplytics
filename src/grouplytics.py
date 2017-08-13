@@ -168,21 +168,23 @@ class Grouplytics:
 
      
     def _generate_report(self, title, total_count, key_val, shouldDescend=True, includePercent=True, subreport=None):
+        if total_count == 0: return None
+
         report = {
             "title": title,
-            "total": total_count if total_count != 0 else None,
+            "total": total_count,
             "items": [],
             "subreport": subreport
         }
 
         if total_count != 0:
-            # Sort dictionary by count so each report appears sorted. 
             sorted_count = sorted(key_val.items(), key=operator.itemgetter(1), reverse=shouldDescend)
-            report["items"] = [{'name': self._map_member_ID_to_name(x[0]), 'count': x[1]} for x in filter(lambda item: item[1] > 0, sorted_count)]
+            report["items"] = [{'name': self.members[x[0]] if x[0] in self.members, 'count': x[1]}]
+                                # for x in filter(lambda item: item[1] > 0, sorted_count)]
 
         return report
 
-
+    # I removed this from line 181, I don't think it's necessary.
     def _map_member_ID_to_name(self, ID):
         if ID in self.members:
             return self.members[ID]

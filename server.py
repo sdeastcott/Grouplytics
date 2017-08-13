@@ -26,9 +26,7 @@ def receive_token():
 def groups():
     token = session.get('token', None)
     if token is None: return 'Error'
-
-
-
+    return GroupMe(token).get_groups()
 
 
 @app.route('/reports', methods=['POST'])
@@ -40,7 +38,7 @@ def reports():
     groupme = GroupMe(token)
     members = groupme.get_members(query['group_id'])
     messages = groupme.get_messages(query['group_id'], members)
-    grouplytics = Grouplytics(groupme.messages, groupme.members)
+    grouplytics = Grouplytics(messages, members)
 
     return jsonify([
         grouplytics.overall_message_report(),
