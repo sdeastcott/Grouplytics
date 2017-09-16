@@ -2,20 +2,20 @@
 Grouplytics is a fun way to learn about any of your GroupMe groups. We sift through (but don't store!) your group messages and generate various reports along the way. Currently this is only available as a command line tool, but a live site is in the works.
 
 ### Available Reports
-- Most Liked
-- Biggest Liker
-- Potty Mouth
-- The Donald Trump Report
-- GF/BF Mentions
-- The 'Dude' Report
-- Meme Lord 
-- Overall message count with per member breakdown
+- Messages Sent
+- Likes Received
+- Messages Liked
+- Average Word Length
+- Swear Word Report
+- Dude Report
+- Youth Slang Report
+- Images Shared
 
 ### Coming Soon!
-- Biggest Complainer
-- Longest period of inactivity
-- Most active hour/day/month of all time
-- Serial Name Changer
+- Emoji Report
+- Most Active Day
+- Number of Zero Message Days
+- Longest Period of Inactivity
 
 ### How To Use Command Line Tool:
 1. Go to dev.groupme.com
