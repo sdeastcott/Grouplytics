@@ -7,16 +7,14 @@ from src.cipher_decoder import decode
 
 
 class Grouplytics:
-    def __init__(self, messages, members):
-        self.messages = messages
+    def __init__(self, group, members, messages):
+        self.group = group
         self.members = members
+        self.messages = messages
         
-    # TODO
     def get_creation_date(self):
-        # TODO: I accidentally deleted this code
-        return datetime.fromtimestamp(self.group_data['creation_date']).strftime("%m/%d/%y")
+        return self.group['created_at']
     
-
     def overall_message_report(self):
         total_count = 0
         per_member_count = defaultdict(int)
@@ -25,7 +23,7 @@ class Grouplytics:
             total_count += 1
             per_member_count[message['user_id']] += 1
         
-        seconds_surpassed = float(time.time()) - float(self.group_data['creation_date'])
+        seconds_surpassed = float(time.time()) - float(self.get_creation_date())
         days_surpassed =  seconds_surpassed / 86400.0
         avg_per_day = round(total_count / days_surpassed, 2)
 
@@ -131,8 +129,9 @@ class Grouplytics:
 
     def swear_word_report(self):
         total_count = 0
-        swear_words = decode('src/text/swear_words.txt') # TODO: add more!
+        swear_words = decode('src/text/swear_words.txt')
         per_member_count = defaultdict(int)
+        subreport = None
 
         for message in self.messages:
             if message['text']:
@@ -168,7 +167,6 @@ class Grouplytics:
 
      
     def _generate_report(self, title, total_count, key_val, shouldDescend=True, includePercent=True, subreport=None):
-        if total_count == 0: return None
 
         report = {
             "title": title,
@@ -177,18 +175,11 @@ class Grouplytics:
             "subreport": subreport
         }
 
-        if total_count != 0:
-            sorted_count = sorted(key_val.items(), key=operator.itemgetter(1), reverse=shouldDescend)
-            report["items"] = [{'name': self.members[x[0]] if x[0] in self.members, 'count': x[1]}]
-                                # for x in filter(lambda item: item[1] > 0, sorted_count)]
+        if total_count == 0: return report
+        sorted_count = sorted(key_val.items(), key=operator.itemgetter(1), reverse=shouldDescend)
+        report["items"] = [{'name': self.members[x[0]], 'count': x[1]} for x in filter(lambda item: item[1] > 0, sorted_count)]
 
         return report
-
-    # I removed this from line 181, I don't think it's necessary.
-    def _map_member_ID_to_name(self, ID):
-        if ID in self.members:
-            return self.members[ID]
-
 
     '''
     def gossip_report(self):

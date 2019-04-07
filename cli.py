@@ -23,9 +23,9 @@ def _get_required_info():
             members.append(remaining.strip())
 
     required_info = {}
-    required_info['Access Token'] = token
-    required_info['Group Name'] = name
-    required_info['Group Members'] = members
+    required_info['accessToken'] = token
+    required_info['groupName'] = name
+    required_info['groupMembers'] = members
     return required_info
 
 
@@ -78,17 +78,18 @@ def report_to_text(report):
 
 def main():
     required_info = _get_required_info()
-    access_token = required_info['Access Token']
-    group_name = required_info['Group Name']
+    access_token = required_info['accessToken']
+    group_name = required_info['groupName']
     groupme = GroupMe(access_token)
     group_id = groupme.get_group_id(group_name)
+    group = groupme.get_group(group_id)
     members = groupme.get_members(group_id)
-    messages = groupme.get_messages(group_id, True)
-    grouplytics = Grouplytics(members, messages)
+    messages = groupme.get_messages(group_id, members)
+    grouplytics = Grouplytics(group, members, messages)
 
     with open('report.txt', 'w') as f:
-        f.write("Group Creation Date: ")
-        f.write(grouplytics.get_creation_date() + '\n' + '\n')
+        f.write("Group Creation Date: " + '\n' + '\n')
+        #f.write(grouplytics.get_creation_date() + '\n' + '\n')
     
     report_to_text(grouplytics.overall_message_report())
     report_to_text(grouplytics.likes_received())

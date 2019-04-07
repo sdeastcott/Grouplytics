@@ -42,33 +42,8 @@ class GroupMe:
 
         return ID_and_name
 
-    
-    def get_messages(self, group_id, members=None):
-        request = requests.get('{}/groups/{}/messages?limit=100&token={}'.format(self._base_URL, group_id, self._access_token))
-        response = request.json()['response']
-        retrieved = len(response['messages'])
-        messages = response['messages']
-        message_count = response['count']
-        
-        while retrieved < message_count:
-            before_id = messages[-1]['id']
-            request = requests.get('{}/groups/{}/messages?limit=100&before_id={}&token={}'
-                                   .format(self._base_URL, group_id, before_id, self._access_token))
-            
-            # Break if status code 304 (i.e. no data) is returned. TODO: why does this happen?
-            if request.status_code == 304: break
-            response = request.json()['response']
-            retrieved += len(response['messages'])
-            messages += response['messages']
-            
-        if members:
-            messages = filter_messages(messages, members)
-
-        return messages
-
-
     def filter_messages(self, messages, members):
-        messages = []
+        filtered_messages = []
 
         for message in messages:
             if message['sender_type'] != 'system' and message['user_id'] in members:
@@ -76,6 +51,29 @@ class GroupMe:
                     text = message['text'].strip().lower()
                     text = ''.join(ch for ch in text if ch.isalnum() or ch == " ")
                     message['text'] = text
-                messages.append(message)
+                filtered_messages.append(message)
+
+        return filtered_messages
+
+    def get_messages(self, group_id, members=None):
+        request = requests.get('{}/groups/{}/messages?limit=100&token={}'.format(self._base_URL, group_id, self._access_token))
+        response = request.json()['response']
+        retrieved = len(response['messages'])
+        messages = response['messages']
+        message_count = response['count']
+         
+        while retrieved < message_count:
+            before_id = messages[-1]['id']
+            request = requests.get('{}/groups/{}/messages?limit=100&before_id={}&token={}'
+                                   .format(self._base_URL, group_id, before_id, self._access_token))
+            
+            # Break if status code 304 (i.e. no data) is returned. 
+            if request.status_code == 304: break
+            response = request.json()['response']
+            retrieved += len(response['messages'])
+            messages += response['messages']
+            
+        if members:
+            messages = self.filter_messages(messages, members)
 
         return messages
